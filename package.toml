@@ -1,0 +1,30 @@
+name = "wren-toml"
+version = "0.0.0"
+description = "TOML parser for Wren. Parses TOML v0.5.0"
+homepage = "https://github.com/datatypevoid/wren-toml"
+license = "ISC"
+main = "src/module.wren"
+tags = [
+  "toml",
+  "parser",
+  "wren"
+]
+
+[bugs]
+  url = "https://github.com/datatypevoid/wren-toml/issues"
+
+[author]
+  name = "David Newman"
+  url = "https://github.com/datatypevoid"
+  email = "david@nici.solutions"
+
+[[dependencies]]
+  name = "wren-enum"
+  git = "https://github.com/datatypevoid/wren-enum"
+  version = "master"
+
+[[dependencies]]
+  name = "wren-test"
+  git = "https://github.com/datatypevoid/wren-test"
+  group = "test"
+  version = "master"
