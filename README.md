@@ -118,7 +118,7 @@ Examples live in the `examples/` [directory](https://github.com/datatypevoid/wre
 
 ```bash
 # `file` is the filename of the example you'd like to run.
-$ wren ./tests/file.wren
+$ wren ./examples/file.wren
 ```
 
 
