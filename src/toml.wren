@@ -9,9 +9,10 @@ class TOML {
    * Methods
    */
 
-  construct new (scanner, parser) {
+  construct new (scanner, parser, stringifier) {
     _parser = parser
     _scanner = scanner
+    _stringifier = stringifier
   }
 
 
@@ -22,6 +23,11 @@ class TOML {
 
   parse (input) {
     return _parser.new(tokenize(input), input).parse()
+  }
+
+
+  stringify (input) {
+    return _stringifier.new(input).toString
   }
 
 
