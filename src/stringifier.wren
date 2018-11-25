@@ -374,11 +374,6 @@ class TOMLStringifier {
   }
 
 
-  static m_generateIndent (depth) {
-    return TOMLStringifier.m_generateIndent(depth, null)
-  }
-
-
   static m_generateIndent (depth, options) {
 
     options = options || {}
