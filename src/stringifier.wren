@@ -51,7 +51,7 @@ class TOMLStringifier {
 
   toString {
 
-    var output = TOMLStringifier.m_stringify(_input)
+    var output = TOMLStringifier.m_stringify(_input, _options)
 
     if (output.startsWith("\n")) {
       output = output.trimStart("\n")
@@ -75,16 +75,22 @@ class TOMLStringifier {
   }
 
 
+  construct new (input, options) {
+    _input = input
+    _options = options
+  }
+
+
   /*
    * Private Methods
    */
 
-  static m_stringify (object) {
-    return m_stringify(object, null)
-  }
+   static m_stringify (object, options) {
+     return m_stringify(object, null, options)
+   }
 
 
-  static m_stringify (object, path) {
+  static m_stringify (object, path, options) {
 
     path = path || []
 
@@ -99,9 +105,9 @@ class TOMLStringifier {
     } else if (object is String) {
       return TOMLStringifier.m_stringifyString(object)
     } else if (object is List) {
-      return TOMLStringifier.m_stringifyList(object)
+      return TOMLStringifier.m_stringifyList(object, options)
     } else if (object is Map) {
-      return TOMLStringifier.m_stringifyMap(object, path)
+      return TOMLStringifier.m_stringifyMap(object, path, options)
     } else if (object is Null) {
       return TOMLStringifier.m_stringifyNull(object)
     } else {
@@ -111,12 +117,12 @@ class TOMLStringifier {
   }
 
 
-  static m_stringifyList (list) {
+  static m_stringifyList (list, options) {
 
     var sub = list.map { |o|
       return o.type == String ?
-        "\"%(TOMLStringifier.m_stringify(o))\"" :
-        TOMLStringifier.m_stringify(o)
+        "\"%(TOMLStringifier.m_stringify(o, options))\"" :
+        TOMLStringifier.m_stringify(o, options)
     }
 
     return "[" + sub.join(", ") + "]"
@@ -176,7 +182,7 @@ class TOMLStringifier {
   }
 
 
-  static m_stringifyMap (map, path) {
+  static m_stringifyMap (map, path, options) {
 
     var lists = []
     var maps = []
@@ -197,17 +203,17 @@ class TOMLStringifier {
     var sub
 
     // Parse value types.
-    sub = TOMLStringifier.m_stringifyValueTypes(map, path, values)
+    sub = TOMLStringifier.m_stringifyValueTypes(map, path, values, options)
     result = sub.join("")
     if (!result.endsWith("\n")) result = "%(result)\n"
 
     // Process maps.
-    sub = TOMLStringifier.m_stringifyMaps(map, path, maps)
+    sub = TOMLStringifier.m_stringifyMaps(map, path, maps, options)
     result = "%(result)%(sub.join(""))"
     if (!result.endsWith("\n")) result = "%(result)\n"
 
     // Process lists.
-    sub = TOMLStringifier.m_stringifyLists(map, path, lists)
+    sub = TOMLStringifier.m_stringifyLists(map, path, lists, options)
     result = "%(result)%(sub.join(""))"
     if (!result.endsWith("\n")) result = "%(result)\n"
 
@@ -231,11 +237,11 @@ class TOMLStringifier {
   }
 
 
-  static m_preparePath (list, next) {
+  static m_preparePath (list, next, options) {
 
     var newPath = CloneList.call(list)
 
-    newPath.add(TOMLStringifier.m_stringify(next))
+    newPath.add(TOMLStringifier.m_stringify(next, options))
 
     return newPath
 
@@ -273,7 +279,7 @@ class TOMLStringifier {
   }
 
 
-  static m_stringifyValueTypes (o, pathList, values) {
+  static m_stringifyValueTypes (o, pathList, values, options) {
 
     var indent
     var path
@@ -285,15 +291,15 @@ class TOMLStringifier {
 
       item = o[key]
 
-      path = TOMLStringifier.m_preparePath(pathList, key)
+      path = TOMLStringifier.m_preparePath(pathList, key, options)
 
-      indent = TOMLStringifier.m_generateIndent(path.count)
+      indent = TOMLStringifier.m_generateIndent(path.count, options)
 
-      key = TOMLStringifier.m_stringify(key)
+      key = TOMLStringifier.m_stringify(key, options)
 
       if (TOMLStringifier.m_shouldKeyBeQuoted(key)) key = "\"%(key)\""
 
-      value = TOMLStringifier.m_stringify(item, null)
+      value = TOMLStringifier.m_stringify(item, options)
 
       if (item.type == String) value = "\"%(value)\""
 
@@ -304,25 +310,25 @@ class TOMLStringifier {
   }
 
 
-  static m_stringifyMaps (o, pathList, maps) {
+  static m_stringifyMaps (o, pathList, maps, options) {
 
     var indent
     var path
 
     return maps.map { |key|
 
-      path = TOMLStringifier.m_preparePath(pathList, key)
+      path = TOMLStringifier.m_preparePath(pathList, key, options)
 
-      indent = TOMLStringifier.m_generateIndent(path.count)
+      indent = TOMLStringifier.m_generateIndent(path.count, options)
 
-      return "\n%(indent)[" + path.join(".") + "]%(TOMLStringifier.m_stringify(o[key], path))"
+      return "\n%(indent)[" + path.join(".") + "]%(TOMLStringifier.m_stringify(o[key], path, options))"
 
     }
 
   }
 
 
-  static m_stringifyLists (o, pathList, lists) {
+  static m_stringifyLists (o, pathList, lists, options) {
 
     var arrayKey
     var indent
@@ -334,16 +340,16 @@ class TOMLStringifier {
 
       string = ""
 
-      path = TOMLStringifier.m_preparePath(pathList, key)
+      path = TOMLStringifier.m_preparePath(pathList, key, options)
 
-      indent = TOMLStringifier.m_generateIndent(path.count)
+      indent = TOMLStringifier.m_generateIndent(path.count, options)
 
       arrayKey = "\n%(indent)[[" + path.join(".") + "]]"
 
       objectsList = o[key]
 
       for (object in objectsList) {
-        string = "%(string)%(arrayKey)%(TOMLStringifier.m_stringify(object, path))"
+        string = "%(string)%(arrayKey)%(TOMLStringifier.m_stringify(object, path, options))"
       }
 
       return string
@@ -353,15 +359,40 @@ class TOMLStringifier {
   }
 
 
+  static m_generateTabSequence (options) {
+
+    options = options || {}
+    var tabChar = options["tabChar"] || " "
+    var tabDepth = options["tabDepth"] || 2
+
+    var tab = ""
+
+    for (i in 1..tabDepth) tab = "%(tab)%(tabChar)"
+
+    return tab
+
+  }
+
+
   static m_generateIndent (depth) {
+    return TOMLStringifier.m_generateIndent(depth, null)
+  }
+
+
+  static m_generateIndent (depth, options) {
+
+    options = options || {}
+    options["tabChar"] = options["tabChar"] || " "
 
     if (depth is Num == false) {
       Fiber.abort("Expected Num type for 'depth' parameter.")
     }
 
+    var tabSequence = TOMLStringifier.m_generateTabSequence(options)
+
     var indent = ""
 
-    for (i in 1...depth) indent = "%(indent)  "
+    for (i in 1...depth) indent = "%(indent)%(tabSequence)"
 
     return indent
 
