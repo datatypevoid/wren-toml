@@ -7,6 +7,7 @@ import "../wren_modules/wren-test/dist/module" for ConsoleReporter
 // Test suites.
 import "./e2e/parser" for TOMLParserTest
 import "./e2e/scanner" for TOMLScannerTest
+import "./e2e/stringifier" for TOMLStringifierTest
 
 
 /*
@@ -16,7 +17,8 @@ import "./e2e/scanner" for TOMLScannerTest
 // Store test suites in List.
 var tests = [
   TOMLScannerTest,
-  TOMLParserTest
+  TOMLParserTest,
+  TOMLStringifierTest
 ]
 
 
