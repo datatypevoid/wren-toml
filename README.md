@@ -40,6 +40,8 @@ $ wrenpm install
 
 ## Usage
 
+### Tokenize and Parse
+
 ```wren
 
 // Import module.
@@ -62,7 +64,7 @@ System.print("Parsing...")
 
 var output = toml.parse(tokens, input)
 
-System.print("Printing...")
+System.print("Printing output...")
 
 System.print(output)
 
@@ -83,7 +85,74 @@ System.print("Parsing...")
 
 var output = toml.parse(input)
 
-System.print("Printing...")
+System.print("Printing output...")
+
+System.print(output)
+
+```
+
+
+### Stringify
+
+```wren
+
+var input = {
+  "products": [{
+    "name": "Hammer",
+    "sku": 738594937
+  }, {
+    "name": "Plank",
+    "sku": 637984168,
+    "variety": [{
+      "type": "birch"
+    }, {
+      "type": "maple"
+    }]
+  }, {
+    "name": "Nail",
+    "color": "gray",
+    "sku": 284758393
+  }]
+}
+
+System.print("Creating TOML instance...")
+
+var toml = TOML.new()
+
+System.print("Stringifying...")
+
+var output = toml.stringify(input)
+
+System.print("Printing output...")
+
+System.print(output)
+
+```
+
+#### Options
+
+The stringify method accepts an optional `Map` which may contain any of the following configuration options:
+- `appendTrailingNewLine` {`Bool`} - Appends a trailing new line character to the stringified output. Defaults to `true`.
+- `tabChar` {`String`} - Character sequence to use when generating tabs. Defaults to a single space.
+- `tabDepth` {`Num`} - How many tab character sequences should be used per tab. Defaults to `2`.
+
+```wren
+
+var input = { . . . }
+
+System.print("Creating TOML instance...")
+
+var toml = TOML.new()
+
+System.print("Stringifying...")
+
+var output = toml.stringify(input, {
+  "appendTrailingNewLine": false,
+  "tabChar": "\t",
+  "tabDepth": 1
+})
+
+System.print("Printing output...")
 
 System.print(output)
 
