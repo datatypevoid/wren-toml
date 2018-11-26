@@ -27,6 +27,11 @@ class TOML {
 
 
   stringify (input) {
+    return _stringifier.new(input, null).toString
+  }
+
+
+  stringify (input, options) {
     return _stringifier.new(input).toString
   }
 
