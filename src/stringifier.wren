@@ -57,7 +57,9 @@ class TOMLStringifier {
       output = output.trimStart("\n")
     }
 
-    if (output.endsWith("\n") == false) {
+    if ((_options &&
+      (options["appendTrailingNewLine"] == null || options["appendTrailingNewLine"] == true)) &&
+      output.endsWith("\n") == false) {
       output = "%(output)\n"
     }
 
