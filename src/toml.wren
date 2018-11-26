@@ -32,7 +32,7 @@ class TOML {
 
 
   stringify (input, options) {
-    return _stringifier.new(input).toString
+    return _stringifier.new(input, options).toString
   }
 
 
