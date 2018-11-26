@@ -359,6 +359,15 @@ class TOMLStringifier {
   }
 
 
+  /**
+   * Generates a tab sequence.
+   * @private
+   * @param {Num} depth Depth of this tab sequence.
+   * @param {Map} options Can have the following optional properties:
+   *  - `tabChar` - indicates the character sequence to use when generating the
+   *  tab sequnce. Defaults to a single space character.
+   * @return {String}
+   */
   static m_generateTabSequence (options) {
 
     options = options || {}
@@ -374,10 +383,14 @@ class TOMLStringifier {
   }
 
 
+  /**
+   * Generates an indent sequence.
+   * @private
+   * @param {Num} depth Depth of this indent sequence.
+   * @param {Map} options
+   * @return {String}
+   */
   static m_generateIndent (depth, options) {
-
-    options = options || {}
-    options["tabChar"] = options["tabChar"] || " "
 
     if (depth is Num == false) {
       Fiber.abort("Expected Num type for 'depth' parameter.")
